@@ -1132,17 +1132,25 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     char *input = buff;
     int j;
     float nms=.45;    // 0.4F
+    printf("{\n");
+    int cnt = 0;
     while(1){
+	cnt++;
         if(filename){
             strncpy(input, filename, 256);
             if(strlen(input) > 0)
                 if (input[strlen(input) - 1] == 0x0d) input[strlen(input) - 1] = 0;
         } else {
-            printf("Enter Image Path: ");
+            //printf("Enter Image Path: ");
             fflush(stdout);
             input = fgets(input, 256, stdin);
-            if(!input) return;
+            if(!input) {
+    		printf("}\n");
+		return;
+	    }
             strtok(input, "\n");
+	    if(cnt == 1) printf("\t\"%s\": \n",input);
+	    else printf(",\t\"%s\": \n",input);
         }
         image im = load_image(input,0,0,net.c);
         int letterbox = 0;
@@ -1160,7 +1168,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         double time = get_time_point();
         network_predict(net, X);
         //network_predict_image(&net, im); letterbox = 1;
-        printf("%s: Predicted in %lf milli-seconds.\n", input, ((double)get_time_point() - time) / 1000);
+        //printf("%s: Predicted in %lf milli-seconds.\n", input, ((double)get_time_point() - time) / 1000);
         //printf("%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time));
 
         int nboxes = 0;
